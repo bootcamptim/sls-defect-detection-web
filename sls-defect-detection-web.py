@@ -3,25 +3,22 @@ import tensorflow as tf
 import numpy as np
 import os
 
+models = []
+for filename in os.listdir('models'):
+    filepath = os.path.join('models', filename)
+    if os.path.isfile(filepath):
+        models.append(filepath)
+
 # Flask Server
 app = Flask(__name__)
 
 @app.route('/', methods=['GET'])
 def model_select():
+    model = request.form.get('Model')
+    return model, redirect('predict')
 
-    models = []
-    for filename in os.listdir('models'):
-        filepath = os.path.join('models', filename)
-        if os.path.isfile(filepath):
-            models.append(filepath)
-
-    return redirect(url_for('prediction'))
-
-@app.route('/predict', methods=['POST', 'GET'])
+@app.route('/predict')
 def prediction():
-    if request.method == 'GET':
-        model = request.form['Model']
-
         return render_template('index.html')
 
 if __name__ == '__main__':
