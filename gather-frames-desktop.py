@@ -1,8 +1,7 @@
 import os
 import shutil
 import filecmp
-from watchdog.observers import Observer
-from watchdog.events import FileSystemEventHandler
+import time
 
 # /Volumes/fhcwdev's home/sls-defect-detection-pi/output
 
@@ -10,45 +9,40 @@ from watchdog.events import FileSystemEventHandler
 pi_dir = os.path.join('/Volumes', "fhcwdev's home", 'sls-defect-detection-pi', 'output')
 dest_dir = os.path.join('output')
 
-print(os.listdir(pi_dir))
-print(os.listdir(dest_dir))
+def get_files(directory):
+    return set([f for f in os.listdir(directory) if os.path.isfile(os.path.join(directory, f))])
 
-# intialize watchdog
-class EventHandler(FileSystemEventHandler):
 
-    def on_created(self, event):
+def copy_files(network_files):
+    for file in network_files:
+        try:
+            src_file = os.path.join(pi_dir, file)
+            dst_file = os.path.join(dest_dir, file)
 
-        if not event.is_directory:
+            # Check if file exists in local folder
+            if os.path.exists(dst_file):
+                pass
+                   
+            else:
+                # If file does not exist copy
+                shutil.copy2(src_file, dst_file)
+                print(f'Copied {dst_file}')
 
-            try:
-                src_file = event.src_path
-                file = os.path.basename(src_file)
-                dst_file = os.path.join(dest_dir, file)
+        except Exception as e:
+            print(f"Error occurred while copying file: {e}")
 
-                # Check if file exists in local folder
-                if os.path.exists(dst_file):
-                    pass
-
-                else:
-                    # If file does not exist copy
-                    shutil.copy2(src_file, dst_file)
-                    print(f'Copied {src_file}')
-
-            except Exception as e:
-                print(f"Error occurred while copying file: {e}")
-
-event_handler = EventHandler()
-observer = Observer()
-observer.schedule(event_handler, path=pi_dir, recursive=False)
+last_seen_files = get_files(pi_dir)
 
 try:
-    observer.start()
-    print("Watching for new files... Press Ctrl+C to stop.")
-
     while True:
-        pass
+        print("Checking for new files...")
+        current_files = get_files(pi_dir)
+        new_files = current_files - last_seen_files
+        if new_files:
+            print("New files found: ", new_files)
+            copy_files(new_files)
+        last_seen_files = current_files
+        time.sleep(1)  # wait for 1 second before checking again
 
 except KeyboardInterrupt:
-    observer.stop()
-
-observer.join()
+    print("File monitoring stopped.")
