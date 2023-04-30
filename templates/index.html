@@ -5,35 +5,56 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            justify-content: space-between;
+        body, h1, select, button, div {
+            font-family: Arial;
+            right: 25px;
+            top: 25px;
+        }
+        #videoContainer, #predictionContainer {
+            position: fixed;
+            right: 25px;
+            border-radius: 5px;
+            overflow: hidden;
+            text-align: center;
+        }
+        #videoContainer {
+            top: 25px;
+            width: 640px;
+        }
+        #predictionContainer {
+            width: 620px;
+            top: 510px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            color: white;
         }
         #prediction {
             margin-top: 10px;
             font-weight: bold;
         }
-        #controls {
-            flex: 1;
+        h1, select, button {
+            margin-left: 10px;
         }
-        #videoFeed {
-            max-width: 50%;
+        img {
+            width: 100%;
+            height: 480px;
         }
     </style>
 </head>
 <body>
-    <div id="controls">
-        <h1>SLS Defect Detection Web</h1>
-        <select id="modelSelect">
-            {% for model in models %}
-            <option value="{{ model }}">{{ model }}</option>
-            {% endfor %}
-        </select>
-        <button onclick="loadVideoFeed()">Load Video Feed</button>
+    <h1>SLS Defect Detection Web</h1>
+    <select id="modelSelect">
+        {% for model in models %}
+        <option value="{{ model }}">{{ model }}</option>
+        {% endfor %}
+    </select>
+    <button onclick="loadVideoFeed()">Load Video Feed</button>
+    <div id="videoContainer">
+        <img id="videoFeed" src="" />
+    </div>
+    <div id="predictionContainer">
         <div id="prediction">Prediction will appear here</div>
     </div>
-    <img id="videoFeed" src="" />
 
     <script>
         var socket = io.connect('http://' + document.domain + ':' + location.port);
@@ -45,10 +66,11 @@
 
         socket.on('prediction', function(data) {
             var predictionElement = document.getElementById('prediction');
+            var predictionContainer = document.getElementById('predictionContainer');
             if (data.data === 'Defect') {
-                predictionElement.style.color = 'red';
+                predictionContainer.style.background = 'rgba(255, 0, 0, 0.7)';
             } else {
-                predictionElement.style.color = 'green';
+                predictionContainer.style.background = 'rgba(0, 255, 0, 0.7)';
             }
             predictionElement.innerHTML = data.data;
         });
