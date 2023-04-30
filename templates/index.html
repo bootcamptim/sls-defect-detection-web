@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>SLS Defect Detection Web</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: space-between;
+        }
+        #prediction {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        #controls {
+            flex: 1;
+        }
+        #videoFeed {
+            max-width: 50%;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <h1>Video Stream</h1>
+        <select id="modelSelect">
+            {% for model in models %}
+            <option value="{{ model }}">{{ model }}</option>
+            {% endfor %}
+        </select>
+        <button onclick="loadVideoFeed()">Load Video Feed</button>
+        <div id="prediction">Prediction will appear here</div>
+    </div>
+    <img id="videoFeed" src="" />
+
+    <script>
+        var socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        function loadVideoFeed() {
+            var model = document.getElementById('modelSelect').value;
+            document.getElementById('videoFeed').src = '/video_feed?model=' + model;
+        }
+
+        socket.on('prediction', function(data) {
+            var predictionElement = document.getElementById('prediction');
+            if (data.data === 'Defect') {
+                predictionElement.style.color = 'red';
+            } else {
+                predictionElement.style.color = 'green';
+            }
+            predictionElement.innerHTML = data.data;
+        });
+    </script>
+</body>
+</html>
