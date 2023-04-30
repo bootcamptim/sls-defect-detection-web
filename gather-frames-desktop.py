@@ -34,15 +34,18 @@ def copy_files(network_files):
 last_seen_files = get_files(pi_dir)
 
 try:
+
+    print('Waiting for Files...')
+
     while True:
-        print("Checking for new files...")
         current_files = get_files(pi_dir)
         new_files = current_files - last_seen_files
+
         if new_files:
-            print("New files found: ", new_files)
             copy_files(new_files)
+
         last_seen_files = current_files
-        time.sleep(1)  # wait for 1 second before checking again
+        time.sleep(0.01)
 
 except KeyboardInterrupt:
-    print("File monitoring stopped.")
+    print("Aborted.")
