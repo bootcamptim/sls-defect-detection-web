@@ -48,4 +48,4 @@ try:
         time.sleep(0.01)
 
 except KeyboardInterrupt:
-    print("Aborted.")
+    print('\nAborted.')
