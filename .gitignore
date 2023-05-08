@@ -142,3 +142,5 @@ models/*
 !models/.gitkeep
 
 .DS_Store
+
+gather-frames-web-sftp.py
