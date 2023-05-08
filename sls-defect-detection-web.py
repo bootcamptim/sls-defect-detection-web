@@ -72,7 +72,8 @@ def video_feed():
                 img_resized = cv2.resize(img, (640, 480))
                 img_expanded = np.expand_dims(img_resized, axis=0)
                 prediction = model.predict(img_expanded)
-                result = "Defect" if prediction == 1 else "Ok"
+                print(prediction)
+                result = "Defect" if prediction[0][1] != 1 else "Ok"
                 socketio.emit('prediction', {'data': result})
 
                 (flag, encodedImage) = cv2.imencode(".jpg", img)
