@@ -30,7 +30,7 @@ def image_queue_worker():
             latest_files = sorted(list_of_files, key=os.path.getctime, reverse=True)
             for latest_file in latest_files:
                 file_size = os.path.getsize(latest_file)
-                if file_size > 50000:  # Adjust the threshold as needed
+                if file_size > 70000:  # Adjust the threshold as needed
                     img = cv2.imread(latest_file)
                     if img is not None and np.any(img):
                         try:
