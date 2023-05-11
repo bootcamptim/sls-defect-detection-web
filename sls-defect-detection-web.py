@@ -30,7 +30,7 @@ def image_queue_worker():
             latest_files = sorted(list_of_files, key=os.path.getctime, reverse=True)
             for latest_file in latest_files:
                 file_size = os.path.getsize(latest_file)
-                if file_size > 70000:  # Adjust the threshold as needed
+                if file_size > 24000:  # Adjust the threshold as needed to avoid 'Premature End fo JPG'
                     img = cv2.imread(latest_file)
                     if img is not None and np.any(img):
                         try:
@@ -73,7 +73,7 @@ def video_feed():
                 img_expanded = np.expand_dims(img_resized, axis=0)
                 prediction = model.predict(img_expanded)
                 print(prediction)
-                result = "Defect" if prediction[0][1] != 1 else "Ok"
+                result = 'Ok' if np.argmax(prediction[0]) == 1 else 'Defect'
                 socketio.emit('prediction', {'data': result})
 
                 (flag, encodedImage) = cv2.imencode(".jpg", img)

@@ -135,6 +135,7 @@ cython_debug/
 
 output/*
 !output/.gitkeep
+broken part run/*
 
 input/*
 
